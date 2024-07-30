@@ -1,0 +1,275 @@
+:base = https://localhost:7143/api/v1
+
+#
+
+
+# Authentication logic
+
+POST :base/account/login
+-> jq-set-var :auth-token .jwtToken
+-> jq-set-var :userId .id
+Content-Type: application/json
+
+{
+        "email": "superadminuser@email.com",
+        "password": "123Pa$$word!"
+}
+
+# POST :base/account/login
+# -> jq-set-var :auth-token .jwtToken
+# -> jq-set-var :userId .id
+# Content-Type: application/json
+
+# {
+#         "email": "adminuser@email.com",
+#         "password": "123Pa$$word!"
+# }
+
+# POST :base/account/login
+# -> jq-set-var :auth-token .jwtToken
+# -> jq-set-var :userId .id
+# Content-Type: application/json
+
+# {
+#         "email": "basicuser@email.com",
+#         "password": "123Pa$$word!"
+# }
+
+
+
+# General headers
+
+:headers = <<
+Content-Type: application/json
+Authorization: Bearer :auth-token
+
+# Testing of user features
+
+POST :base/account/register/waiter
+Content-Type: application/json
+{
+        "name": "F",
+        "surname": "A",
+        "email": "arst@arst",
+        "password": "123Pa$$word!"
+}
+
+#
+
+POST :base/account/register/admin
+:headers
+{
+        "name": "O",
+        "surname": "K",
+        "email": "frailin@gmail.com",
+        "password": "123Pa$$word!"
+}
+
+
+
+
+
+
+
+
+## Ingredient Operations
+
+#1
+POST :base/ingredient
+:headers
+{
+  "name": "salt1"
+}
+
+
+#2
+POST :base/ingredient
+:headers
+{
+  "name": "salt2"
+}
+
+#3
+POST :base/ingredient
+:headers
+{
+  "name": "salt3"
+}
+
+#4
+POST :base/ingredient
+:headers
+{
+  "name": "salt4"
+}
+
+#5
+POST :base/ingredient
+:headers
+{
+  "name": "salt5"
+}
+
+#6
+POST :base/ingredient
+:headers
+{
+  "name": "salt6"
+}
+
+#Test bad request
+POST :base/ingredient
+:headers
+{
+  "name": ""
+}
+
+# Get all created
+
+GET :base/ingredients
+-> jq-set-var :ingredientId .[0].id
+:headers
+
+# Update
+
+PUT :base/ingredient/:ingredientId
+:headers
+{
+        "name": "salt updated"
+}
+
+# Get by id
+
+GET :base/ingredient/:ingredientId
+:headers
+
+
+## Dish operations
+
+# Create
+
+POST :base/dish
+:headers
+{
+  "name": "Cocoa",
+  "price": 100,
+  "portionSize": 2,
+  "dishCategory": "Entry",
+  "ingredients": [
+  "0e9ef120-9a05-45f4-b555-08dca6032802",
+  "965fae7c-0663-490c-b554-08dca6032802",
+  "82030b39-7967-4ec9-b552-08dca6032802"
+  ]
+}
+
+# Get all
+
+GET :base/dishes
+:headers
+
+# Get By id 46ba3c81-1618-48f8-5f5e-08dca60a97c1
+
+GET :base/dish/46ba3c81-1618-48f8-5f5e-08dca60a97c1
+:headers
+
+# PUT
+
+PUT :base/dish/46ba3c81-1618-48f8-5f5e-08dca60a97c1
+:headers
+{
+  "id": "46ba3c81-1618-48f8-5f5e-08dca60a97c1",
+  "name": "Cocoa",
+  "price": 100.0,
+  "portionSize": 2,
+  "dishCategory": "Entry",
+    "ingredientsToRemove": [
+    "1c2586ca-e89b-49c2-b557-08dca6032802",
+    "03ac1eb8-8af0-410f-b556-08dca6032802"
+  ],
+  "ingredientsToAdd": [
+    "82030b39-7967-4ec9-b552-08dca6032802",
+    "965fae7c-0663-490c-b554-08dca6032802",
+    "0e9ef120-9a05-45f4-b555-08dca6032802"
+  ]
+}
+
+# Tables
+
+POST :base/table
+:headers
+{
+  "peopleQuantity": 1,
+  "description": "My table"
+}
+
+#
+GET :base/tables
+:headers
+
+#
+
+GET :base/table/a2da58c9-bfdc-40c8-031e-08dca61074ba
+:headers
+
+#
+
+PUT :base/table/a2da58c9-bfdc-40c8-031e-08dca61074ba
+:headers
+{
+  "peopleQuantity": 3,
+  "description": "string"
+}
+
+#
+GET :base/table/a2da58c9-bfdc-40c8-031e-08dca61074ba/orders
+:headers
+
+#
+
+PATCH :base/table/a2da58c9-bfdc-40c8-031e-08dca61074ba/status
+:headers
+{
+  "status": "CheckingOrders"
+}
+
+# Order
+
+POST :base/order
+:headers
+{
+  "isInProcess": true,
+  "tableId": "a2da58c9-bfdc-40c8-031e-08dca61074ba",
+  "selectedDishes": [
+    "46ba3c81-1618-48f8-5f5e-08dca60a97c1",
+    "3067eda0-f84a-4824-82ca-08dca609eb6a",
+    "34f42e17-ec93-4f85-6b25-08dca6093506"
+  ]
+}
+
+
+#
+GET :base/orders
+:headers
+
+#
+
+GET :base/order/fb6d05a3-2ab2-4dc1-781b-08dca611ef08
+:headers
+
+#
+
+DELETE :base/order/fb6d05a3-2ab2-4dc1-781b-08dca611ef08
+:headers
+
+#
+
+PUT :base/order/f4a48d7e-de46-431c-a883-08dca612f5e3
+:headers
+{
+  "dishesToRemove": [
+    "f4a48d7e-de46-431c-a883-08dca612f5e3"
+  ],
+  "dishesToAdd": [
+  ]
+}
+
